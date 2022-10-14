@@ -59,6 +59,18 @@ public class PessoaController {
         return ResponseEntity.status(HttpStatus.OK).body(pessoaService.save(pessoa));
     }
 
+    @PutMapping
+    public ResponseEntity<Object> update(@RequestBody @Valid PessoaDTO pessoaDTO) {
+
+        if (!pessoaService.existsById(pessoaDTO.getCpf())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CPF Inválido!");
+        }
+
+        Pessoa pessoa = new Pessoa();
+        BeanUtils.copyProperties(pessoaDTO, pessoa);
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.save(pessoa));
+    }
+
     @DeleteMapping("/{cpf}")
     public ResponseEntity<Object> deleteById(@PathVariable(value = "cpf") Long cpf) {
 
