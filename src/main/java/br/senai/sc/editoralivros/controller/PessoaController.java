@@ -20,7 +20,7 @@ public class PessoaController {
 
     private PessoaService pessoaService;
 
-    @GetMapping("/{email}")
+    @GetMapping("/login/{email}")
     public ResponseEntity<Object> findByEmail(@PathVariable(value = "email") String email) {
 
         if (pessoaService.existsByEmail(email)) {
