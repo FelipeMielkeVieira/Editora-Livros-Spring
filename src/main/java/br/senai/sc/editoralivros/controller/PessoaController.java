@@ -2,6 +2,7 @@ package br.senai.sc.editoralivros.controller;
 
 import br.senai.sc.editoralivros.dto.PessoaDTO;
 import br.senai.sc.editoralivros.model.entities.Pessoa;
+import br.senai.sc.editoralivros.model.factory.PessoaFactory;
 import br.senai.sc.editoralivros.model.service.PessoaService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -43,8 +44,8 @@ public class PessoaController {
         return ResponseEntity.status(HttpStatus.OK).body(pessoaService.findAll());
     }
 
-    @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid PessoaDTO pessoaDTO) {
+    @PostMapping("/{tipo}")
+    public ResponseEntity<Object> save(@RequestBody @Valid PessoaDTO pessoaDTO, @PathVariable(value = "tipo") String tipoPessoa) {
 
         if (pessoaService.existsById(pessoaDTO.getCpf())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Este CPF já está cadastrado!");
@@ -54,7 +55,7 @@ public class PessoaController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Este E-mail já está cadastrado!");
         }
 
-        Pessoa pessoa = new Pessoa();
+        Pessoa pessoa = new PessoaFactory().getPessoa(tipoPessoa);
         BeanUtils.copyProperties(pessoaDTO, pessoa);
         return ResponseEntity.status(HttpStatus.OK).body(pessoaService.save(pessoa));
     }
