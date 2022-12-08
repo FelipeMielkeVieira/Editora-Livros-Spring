@@ -1,58 +1,52 @@
 package br.senai.sc.editoralivros.security;
 
+import br.senai.sc.editoralivros.security.service.GoogleService;
+import br.senai.sc.editoralivros.security.service.JpaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-public class AutenticacaoConfig extends WebSecurityConfigurerAdapter {
+public class AutenticacaoConfig {
 
     @Autowired
-    private AutenticacaoService autenticacaoService;
+    private JpaService jpaService;
+
+    @Autowired
+    private GoogleService googleService;
 
     // Configura as autorizações de acesso
-
-    @Override
-    protected void configure(HttpSecurity httpSecurity) {
-        try {
-            httpSecurity.authorizeRequests()
-                    // Libera o acesso sem autenticação para /login
-                    .antMatchers("/login").permitAll()
-                    .antMatchers(HttpMethod.POST, "/editoralivros/pessoa").permitAll()
-                    // Determina que todas as demais requsições precisam de autenticação
-                    .anyRequest().authenticated()
-//                    .and().formLogin()
-                    .and().csrf().disable()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and().addFilterBefore(new AutenticacaoFiltro(autenticacaoService), UsernamePasswordAuthenticationFilter.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Configura a autenticação para os acessos
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder
-                .userDetailsService(autenticacaoService)
-                .passwordEncoder(new BCryptPasswordEncoder());
-    }
-
-    // Utilizado para realizar a autenticação em AutenticacaoController
     @Bean
-    @Override
-    protected AuthenticationManager authenticationManager() throws Exception {
-        return super.authenticationManager();
+    protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(jpaService);
+        provider.setPasswordEncoder(new BCryptPasswordEncoder());
+        httpSecurity.authenticationProvider(provider);
+
+        httpSecurity.authorizeRequests()
+                // Libera o acesso sem autenticação para /login
+                .antMatchers("/login").permitAll()
+                .antMatchers(HttpMethod.POST, "/editoralivros/pessoa").permitAll()
+                // Determina que todas as demais requisições precisam de autenticação
+                .anyRequest().authenticated()
+                .and().csrf().disable()
+
+                .formLogin().permitAll()
+                .and().oauth2Login().userInfoEndpoint().userService(googleService)
+                .and().defaultSuccessUrl("/home")
+                .and().logout().permitAll()
+
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().addFilterBefore(new AutenticacaoFiltro(jpaService), UsernamePasswordAuthenticationFilter.class);
+        return httpSecurity.build();
     }
 }
