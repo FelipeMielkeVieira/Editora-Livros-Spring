@@ -32,7 +32,7 @@ public class AutenticacaoFiltro extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                     new UsernamePasswordAuthenticationToken(usuario.getUsername(), null, usuario.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        } else if (!request.getRequestURI().equals("/login")) {
+        } else if (!request.getRequestURI().equals("/editoralivros/") && !request.getRequestURI().equals("/editoralivros/usuarios")) {
             response.setStatus(401);
         }
         filterChain.doFilter(request, response);

@@ -34,19 +34,21 @@ public class AutenticacaoConfig {
 
         httpSecurity.authorizeRequests()
                 // Libera o acesso sem autenticação para /login
-                .antMatchers("/login").permitAll()
-                .antMatchers(HttpMethod.POST, "/editoralivros/pessoa").permitAll()
+                .antMatchers("/editoralivros/", "/editoralivros/usuarios").permitAll()
+//                .antMatchers(HttpMethod.POST, "/editoralivros/pessoa").permitAll()
                 // Determina que todas as demais requisições precisam de autenticação
                 .anyRequest().authenticated()
                 .and().csrf().disable()
 
-                .formLogin().permitAll()
-                .and().oauth2Login().userInfoEndpoint().userService(googleService)
-                .and().defaultSuccessUrl("/home")
-                .and().logout().permitAll()
+                .formLogin().permitAll().loginPage("/editoralivros/")
+                .defaultSuccessUrl("/editoralivros/home")
 
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().addFilterBefore(new AutenticacaoFiltro(jpaService), UsernamePasswordAuthenticationFilter.class);
+                .and().oauth2Login().userInfoEndpoint().userService(googleService)
+                .and().loginPage("/editoralivros/").defaultSuccessUrl("/editoralivros/home")
+                .and().logout().permitAll();
+
+//                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and().addFilterBefore(new AutenticacaoFiltro(jpaService), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 }

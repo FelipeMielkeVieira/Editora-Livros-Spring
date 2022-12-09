@@ -21,15 +21,16 @@
 //    @Autowired
 //    private JpaService jpaService;
 //
-//    @Autowired
-//    private AuthenticationManager authenticationManager;
+////    @Autowired
+////    private AuthenticationManager authenticationManager;
 //
 //    @PostMapping
 //    public ResponseEntity<Object> autenticacao(
-//            @RequestBody @Valid UsuarioDTO usuarioDTO) {
+//            @RequestBody @Valid UsuarioDTO usuarioDTO,
+//            Authentication authentication) {
 //
 //        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(), usuarioDTO.getSenha());
-//        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+////        Authentication authentication = authenticationManager.authenticate(authenticationToken);
 //
 //        if (authentication.isAuthenticated()) {
 //            String token = jpaService.gerarToken(authentication);
