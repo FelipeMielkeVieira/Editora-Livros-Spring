@@ -33,9 +33,8 @@
                 </div>
                 <div class="mb-3">
                     <div class="ms-2 form-label fw-semibold">Gênero</div>
-                    <select id="genero" class="form-control">
-                        <option disabled selected>Selecione um gênero</option>
-                        <option th:each="genero:${T(br.senai.sc.editoralivros.model.entities.Genero).values()}" th:text="${genero.nome}">Genero</option>
+                    <select name="genero" id="genero" class="form-control">
+                        <option th:each="genero:${T(br.senai.sc.editoralivros.model.entities.Genero).values()}" th:value="${genero.name}" th:text="${genero.nome}">Genero</option>
                     </select>
                 </div>
                 <div class="mb-3">

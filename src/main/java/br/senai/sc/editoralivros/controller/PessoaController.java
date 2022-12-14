@@ -46,21 +46,13 @@ public class PessoaController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid PessoaDTO pessoaDTO) {
-
-        if (pessoaService.existsById(pessoaDTO.getCpf())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Este CPF já está cadastrado!");
-        }
-
-        if (pessoaService.existsByEmail(pessoaDTO.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Este E-mail já está cadastrado!");
-        }
-
+    public String save(PessoaDTO pessoaDTO) {
         Pessoa pessoa = new PessoaFactory().getPessoa("autor");
         BeanUtils.copyProperties(pessoaDTO, pessoa);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         pessoa.setSenha(encoder.encode(pessoa.getSenha()));
-        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.save(pessoa));
+        pessoaService.save(pessoa);
+        return "home";
     }
 
     @PostMapping("/{tipo}")

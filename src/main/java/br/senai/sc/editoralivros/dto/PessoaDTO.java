@@ -2,10 +2,12 @@ package br.senai.sc.editoralivros.dto;
 
 import br.senai.sc.editoralivros.model.entities.Genero;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 
 @Getter
+@Setter
 public class PessoaDTO {
 
 //    @NotBlank
