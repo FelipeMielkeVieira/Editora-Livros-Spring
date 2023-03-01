@@ -36,6 +36,9 @@ public class Pessoa {
     @Column(nullable = false)
     private String senha;
 
+    @Column
+    private Boolean ativo;
+
     @Enumerated(value = EnumType.STRING)
     @Column(length = 15, nullable = false)
     private Genero genero;

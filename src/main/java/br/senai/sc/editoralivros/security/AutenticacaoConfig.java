@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -40,7 +41,7 @@ public class AutenticacaoConfig {
     protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(jpaService);
-        provider.setPasswordEncoder(new BCryptPasswordEncoder());
+        provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
         httpSecurity.authenticationProvider(provider);
 
         httpSecurity.authorizeRequests()
@@ -48,31 +49,9 @@ public class AutenticacaoConfig {
                 .antMatchers("/editoralivros/", "/editoralivros/usuarios", "/editoralivros/pessoa").permitAll()
                 // Determina que todas as demais requisições precisam de autenticação
                 .anyRequest().authenticated()
-                .and().csrf().disable()
-
-                .formLogin().permitAll().loginPage("/editoralivros/")
-                .defaultSuccessUrl("/editoralivros/home")
-
-                .and().oauth2Login().userInfoEndpoint().userService(googleService)
-
-                .and().loginPage("/editoralivros/").successHandler(new AuthenticationSuccessHandler() {
-                    @Override
-                     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-
-                        try {
-                            UserDetails userDetails = jpaService.loadUserByUsername(oAuth2User.getAttribute("email"));
-                            response.sendRedirect("/editoralivros/home");
-                        } catch (UsernameNotFoundException e) {
-                            response.sendRedirect("/editoralivros/usuarios");
-                        }
-                    }
-                })
-
-                .and().logout().logoutUrl("/editoralivros/logout").logoutSuccessUrl("/editoralivros/").permitAll();
-
-//                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and().addFilterBefore(new AutenticacaoFiltro(jpaService), UsernamePasswordAuthenticationFilter.class);
+                .and().csrf().disable().cors().disable()
+                .formLogin().permitAll()
+                .and().logout().permitAll();
         return httpSecurity.build();
     }
 }

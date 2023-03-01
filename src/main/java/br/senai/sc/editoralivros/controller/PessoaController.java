@@ -46,14 +46,34 @@ public class PessoaController {
     }
 
     @PostMapping
-    public String save(PessoaDTO pessoaDTO) {
-        Pessoa pessoa = new PessoaFactory().getPessoa("autor");
+    public ResponseEntity<Object> save(@RequestBody @Valid PessoaDTO pessoaDTO) {
+
+        if (pessoaService.existsById(pessoaDTO.getCpf())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Este cpf já está cadastrado!");
+        }
+
+        if (pessoaService.existsByEmail(pessoaDTO.getEmail())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Este email já está cadastrado!");
+        }
+
+        Pessoa pessoa = new Pessoa();
         BeanUtils.copyProperties(pessoaDTO, pessoa);
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        pessoa.setSenha(encoder.encode(pessoa.getSenha()));
-        pessoaService.save(pessoa);
-        return "home";
+
+//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+//        pessoa.setSenha(encoder.encode(pessoa.getSenha()));
+
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.save(pessoa));
     }
+
+//    @PostMapping
+//    public String save(PessoaDTO pessoaDTO) {
+//        Pessoa pessoa = new PessoaFactory().getPessoa("autor");
+//        BeanUtils.copyProperties(pessoaDTO, pessoa);
+//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+//        pessoa.setSenha(encoder.encode(pessoa.getSenha()));
+//        pessoaService.save(pessoa);
+//        return "home";
+//    }
 
     @PostMapping("/{tipo}")
     public ResponseEntity<Object> saveWithTipo(@RequestBody @Valid PessoaDTO pessoaDTO, @PathVariable(value = "tipo") String tipoPessoa) {

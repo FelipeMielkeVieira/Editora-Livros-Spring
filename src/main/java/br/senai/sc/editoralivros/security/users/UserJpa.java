@@ -7,6 +7,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+/*
+    Classe que faz o link entre as classes "Pessoa" e "UserDetails", sendo Pessoa a classe usada no banco de dados e UserDetails para o login
+ */
 @Data
 public class UserJpa implements UserDetails {
 
@@ -20,8 +23,6 @@ public class UserJpa implements UserDetails {
 
     private boolean credentialsNonExpired = true;
 
-    private boolean enabled = true;
-
     public UserJpa(Pessoa pessoa) {
         this.pessoa = pessoa;
     }
@@ -34,5 +35,10 @@ public class UserJpa implements UserDetails {
     @Override
     public String getUsername() {
         return pessoa.getEmail();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return pessoa.getAtivo();
     }
 }
