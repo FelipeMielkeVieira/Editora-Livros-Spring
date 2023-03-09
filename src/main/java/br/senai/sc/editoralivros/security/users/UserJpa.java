@@ -39,6 +39,7 @@ public class UserJpa implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return pessoa.getAtivo();
+        return true;
     }
+
 }

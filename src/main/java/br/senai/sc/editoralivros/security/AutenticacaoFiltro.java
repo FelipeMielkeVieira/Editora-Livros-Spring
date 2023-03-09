@@ -1,10 +1,7 @@
 package br.senai.sc.editoralivros.security;
 
-import br.senai.sc.editoralivros.model.entities.Pessoa;
 import br.senai.sc.editoralivros.security.service.JpaService;
-import br.senai.sc.editoralivros.security.users.UserJpa;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,22 +21,29 @@ public class AutenticacaoFiltro extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
+        if(request.getRequestURI().equals("/editoralivros/login") || request.getRequestURI().equals("/editoralivros/usuarios") || request.getRequestURI().equals("/editoralivros/pessoa") || request.getRequestURI().equals("/editoralivros/login/auth")) {
+            filterChain.doFilter(request, response);
+            return;
         }
+
+//        String token = request.getHeader("Authorization");
+//        if (token != null && token.startsWith("Bearer ")) {
+//            token = token.substring(7);
+//        }
+        String token = tokenUtils.buscarCookie(request);
         Boolean valido = tokenUtils.validarToken(token);
 
         if (valido) {
             Long usuarioCPF = tokenUtils.getUsuarioCPF(token);
-            UserDetails usuario = jpaService.loadUserByUsername(usuarioCPF.toString());
+            UserDetails usuario = jpaService.loadUserByCPF(usuarioCPF);
+//            UserDetails usuario = jpaService.loadUserByUsername(usuarioCPF.toString());
 
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                     new UsernamePasswordAuthenticationToken(usuario.getUsername(), null, usuario.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        } else if (!request.getRequestURI().equals("/editoralivros/login") && !request.getRequestURI().equals("/editoralivros/usuarios")) {
-            response.setStatus(401);
+            filterChain.doFilter(request, response);
+            return;
         }
-        filterChain.doFilter(request, response);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }
