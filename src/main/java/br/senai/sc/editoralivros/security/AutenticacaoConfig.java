@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -34,7 +35,8 @@ public class AutenticacaoConfig {
 
         httpSecurity.authorizeRequests()
                 // Libera o acesso sem autenticação para /login
-                .antMatchers("/editoralivros/login", "/editoralivros/usuarios", "/editoralivros/pessoa", "/editoralivros/login/auth").permitAll()
+                .antMatchers("/editoralivros/login", "/editoralivros/login/auth", "/logout").permitAll()
+                .antMatchers(HttpMethod.POST, "/editoralivros/livro").hasAuthority("Autor")
                 // Determina que todas as demais requisições precisam de autenticação
                 .anyRequest().authenticated();
         httpSecurity.csrf().disable().cors().disable();

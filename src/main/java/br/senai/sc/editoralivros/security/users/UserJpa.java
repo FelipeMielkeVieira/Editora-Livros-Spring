@@ -3,9 +3,12 @@ package br.senai.sc.editoralivros.security.users;
 import br.senai.sc.editoralivros.model.entities.Pessoa;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /*
     Classe que faz o link entre as classes "Pessoa" e "UserDetails", sendo Pessoa a classe usada no banco de dados e UserDetails para o login
@@ -40,6 +43,13 @@ public class UserJpa implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public Collection<GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(this.getPessoa().getClass().getSimpleName()));
+        return authorities;
     }
 
 }

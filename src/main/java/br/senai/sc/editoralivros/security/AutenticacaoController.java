@@ -37,6 +37,7 @@ public class AutenticacaoController {
         if (authentication.isAuthenticated()) {
             String token = tokenUtils.gerarToken(authentication);
             Cookie cookie = new Cookie("jwt", token);
+            cookie.setPath("/");
 
             UserJpa userJpa = (UserJpa) authentication.getPrincipal();
             Pessoa pessoa = userJpa.getPessoa();
