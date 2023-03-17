@@ -15,6 +15,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @AllArgsConstructor
@@ -39,12 +44,30 @@ public class AutenticacaoConfig {
                 .antMatchers(HttpMethod.POST, "/editoralivros/livro").hasAuthority("Autor")
                 // Determina que todas as demais requisições precisam de autenticação
                 .anyRequest().authenticated();
-        httpSecurity.csrf().disable().cors().disable();
-        httpSecurity.formLogin().permitAll().and().logout().permitAll();
+
+        httpSecurity.csrf().disable();
+        httpSecurity.cors().configurationSource(corsConfigurationSource());
+
+        httpSecurity.logout().permitAll();
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.addFilterBefore(new AutenticacaoFiltro(new TokenUtils(), jpaService), UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
+    }
+
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(List.of(
+                "https://localhost:3000"
+        ));
+        corsConfiguration.setAllowedMethods(List.of(
+                "POST", "DELETE", "GET", "PUT"
+        ));
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedHeaders(List.of("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return source;
     }
 
     // Injeção de dependências no AutenticacaoController quando necessitar (autowired não funcionar)

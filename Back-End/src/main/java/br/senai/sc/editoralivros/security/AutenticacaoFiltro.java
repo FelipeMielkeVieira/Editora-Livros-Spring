@@ -26,10 +26,6 @@ public class AutenticacaoFiltro extends OncePerRequestFilter {
             return;
         }
 
-//        String token = request.getHeader("Authorization");
-//        if (token != null && token.startsWith("Bearer ")) {
-//            token = token.substring(7);
-//        }
         String token = tokenUtils.buscarCookie(request);
         Boolean valido = tokenUtils.validarToken(token);
 

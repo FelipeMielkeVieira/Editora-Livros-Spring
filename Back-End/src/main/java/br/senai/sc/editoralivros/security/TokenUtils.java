@@ -25,6 +25,14 @@ public class TokenUtils {
                 .compact();
     }
 
+    public Cookie gerarCookie(Authentication authentication) {
+        Cookie cookie = new Cookie("jwt", gerarToken(authentication));
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        cookie.setMaxAge(3600);
+        return cookie;
+    }
+
     public Boolean validarToken(String token) {
         try {
             Jwts.parser().setSigningKey(senhaForte).parseClaimsJws(token);
