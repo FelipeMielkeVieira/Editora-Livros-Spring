@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = "https://localhost:8443/editoralivros/pessoa";
+const url = "http://localhost:8443/editoralivros/pessoa";
 
 class PessoasService {
 

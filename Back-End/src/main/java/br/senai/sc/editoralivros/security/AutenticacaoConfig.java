@@ -34,6 +34,21 @@ public class AutenticacaoConfig {
                 .passwordEncoder(NoOpPasswordEncoder.getInstance());
     }
 
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(List.of(
+                "http://localhost:3000"
+        ));
+        corsConfiguration.setAllowedMethods(List.of(
+                "POST", "DELETE", "GET", "PUT"
+        ));
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedHeaders(List.of("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return source;
+    }
+
     // Configura as autorizações de acesso
     @Bean
     protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
@@ -53,21 +68,6 @@ public class AutenticacaoConfig {
         httpSecurity.addFilterBefore(new AutenticacaoFiltro(new TokenUtils(), jpaService), UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
-    }
-
-    private CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of(
-                "https://localhost:3000"
-        ));
-        corsConfiguration.setAllowedMethods(List.of(
-                "POST", "DELETE", "GET", "PUT"
-        ));
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedHeaders(List.of("*"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-        return source;
     }
 
     // Injeção de dependências no AutenticacaoController quando necessitar (autowired não funcionar)

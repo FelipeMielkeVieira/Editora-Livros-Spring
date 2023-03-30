@@ -32,7 +32,6 @@ public class AutenticacaoFiltro extends OncePerRequestFilter {
         if (valido) {
             Long usuarioCPF = tokenUtils.getUsuarioCPF(token);
             UserDetails usuario = jpaService.loadUserByCPF(usuarioCPF);
-//            UserDetails usuario = jpaService.loadUserByUsername(usuarioCPF.toString());
 
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                     new UsernamePasswordAuthenticationToken(usuario.getUsername(), null, usuario.getAuthorities());
