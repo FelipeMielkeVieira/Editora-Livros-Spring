@@ -16,7 +16,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @AllArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/editoralivros/pessoa")
 public class PessoaController {
 

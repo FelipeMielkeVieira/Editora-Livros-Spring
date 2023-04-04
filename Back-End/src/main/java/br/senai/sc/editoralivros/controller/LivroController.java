@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/editoralivros/livro")
 public class LivroController {
 

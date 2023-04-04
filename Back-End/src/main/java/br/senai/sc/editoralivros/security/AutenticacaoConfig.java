@@ -56,6 +56,7 @@ public class AutenticacaoConfig {
         httpSecurity.authorizeRequests()
                 // Libera o acesso sem autenticação para /login
                 .antMatchers("/editoralivros/login", "/editoralivros/login/auth", "/logout").permitAll()
+                .antMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/editoralivros/livro").hasAuthority("Autor")
                 // Determina que todas as demais requisições precisam de autenticação
                 .anyRequest().authenticated();
