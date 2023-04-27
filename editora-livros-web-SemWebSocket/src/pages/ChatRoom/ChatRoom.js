@@ -11,13 +11,12 @@ export const ChatRoom = () => {
     const isbn = useParams().isbn
     const [mensagens, setMensagens] = useState([]);
     const [mensagem, setMensagem] = useState({});
-    const { enviar } = useContext(WebSocketContext);
+    const { enviar, inscrever, stompClient } = useContext(WebSocketContext);
 
     useEffect(() => {
         async function carregar() {
             await apiMensagens.getMensagensLivro(isbn)
                 .then((response) => {
-                    console.log(response);
                     setMensagens(response);
                 }).catch((error) => {
                     console.log(error);
@@ -28,15 +27,15 @@ export const ChatRoom = () => {
     }, []);
 
     useEffect(() => {
-        const novaMensagem = (response) => {
+        const acaoNovaMensagem = (response) => {
             const mensagemRecebida = JSON.parse(response.body);
             console.log("Mensagem recebida: " + mensagemRecebida);
             setMensagens([...mensagens, mensagemRecebida]);
         }
-        if () {
-            inscrever(`/livro/${isbn}/chat`, novaMensagem);
+        if (stompClient) {
+            inscrever(`/livro/${isbn}/chat`, acaoNovaMensagem);
         }
-    }, [mensagens])
+    }, [mensagens, stompClient])
 
     const setDefaultMensagem = () => {
         const userCookie = Cookies.get('user');
@@ -47,9 +46,8 @@ export const ChatRoom = () => {
         setMensagem({
             livro: { isbn: isbn },
             remetente: { cpf: cpf },
-            mensagem: null
+            mensagem: ""
         })
-        console.log(mensagem)
     }
 
     const atualizaMensagem = (event) => {
@@ -69,7 +67,6 @@ export const ChatRoom = () => {
             <Card>
                 {
                     Object.values(mensagens).map((mensagem) => (
-                        console.log(mensagem),
                         <Card key={mensagem.id}>
                             <Titulo texto={mensagem.remetente.nome} />
                             <Paragrafo texto={mensagem.mensagem} />
@@ -78,11 +75,14 @@ export const ChatRoom = () => {
                 }
                 <form onSubmit={submit}>
                     <TextInput
+                        value={mensagem.mensagem}
                         id="mensagem"
                         type="text"
                         placeholder="Digite a sua mensagem aqui..."
                         required={true}
-                        onChange={atualizaMensagem}
+                        onChange={(e) => {
+                            atualizaMensagem(e);
+                        }}
                     />
                     <Button type="submit">
                         <ForwardToInboxIcon className='h-4 w-auto pr-2' />
