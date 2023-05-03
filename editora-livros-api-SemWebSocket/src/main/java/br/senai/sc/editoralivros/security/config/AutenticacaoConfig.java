@@ -29,9 +29,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Configurações gerais do security
+ */
 @Configuration
 public class AutenticacaoConfig {
 
+    /**
+     * Service para sobrescrever a UserDetailsService (service padrão)
+     */
     @Autowired
     private JpaService jpaService;
 
@@ -54,9 +60,14 @@ public class AutenticacaoConfig {
                 "http://nginx:80",
                 "https://nginx:443"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+
+        // Necessário para pegar valores de cookies
         configuration.setAllowCredentials(true);
+
         configuration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        // Setar todas as rotas de onde ele aceitará requisições
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
@@ -137,6 +148,8 @@ public class AutenticacaoConfig {
 //                .invalidateHttpSession(true)
                 .deleteCookies("jwt", "user")
                 .permitAll();
+
+        // Faz com que a sessão do sistema encerre em certo ponto (é necessária re-autenticação em toda requisição)
         http.sessionManagement().sessionCreationPolicy(
                         SessionCreationPolicy.STATELESS)
                 .and().addFilterBefore(

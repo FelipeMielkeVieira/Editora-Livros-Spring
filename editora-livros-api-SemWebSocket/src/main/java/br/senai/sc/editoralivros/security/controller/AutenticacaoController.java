@@ -38,6 +38,8 @@ public class AutenticacaoController {
                     new UsernamePasswordAuthenticationToken(
                             usuarioDTO.getEmail(), usuarioDTO.getSenha());
             System.out.println(authenticationToken);
+
+            // Processo de autenticação
             Authentication authentication =
                     authenticationManager.authenticate(authenticationToken);
 
@@ -53,12 +55,12 @@ public class AutenticacaoController {
                 System.out.println(userCookie.getValue());
                 response.addCookie(userCookie);
                 System.out.println("Cookie do usuário adicionado");
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(user.getUsername(),
-                                user.getPassword(), user.getAuthorities());
-                System.out.println(usernamePasswordAuthenticationToken);
-                SecurityContextHolder.getContext().setAuthentication(
-                        usernamePasswordAuthenticationToken);
+//                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+//                        new UsernamePasswordAuthenticationToken(user.getUsername(),
+//                                user.getPassword(), user.getAuthorities());
+//                System.out.println(usernamePasswordAuthenticationToken);
+//                SecurityContextHolder.getContext().setAuthentication(
+//                        usernamePasswordAuthenticationToken);
                 System.out.println("Contexto de segurança atualizado");
                 return ResponseEntity.ok().build();
             }
